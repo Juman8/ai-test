@@ -1,5 +1,8 @@
 - detect product, category follow a list defined by clients using bedrock
 
+- ![image](https://github.com/user-attachments/assets/96da86c0-050f-4aea-b430-92a50af1908c)
+
+
 
 using
 ```
