@@ -88,7 +88,7 @@ import { appPrompt, parseJsonString } from "../utils/prompt";
 const axios = require("axios");
 
 const openai = new OpenAI({
-  apiKey: "sk-your-api-key-here", // Thay bằng API key thực tế
+  apiKey: "sk-your-api-key-here",
 });
 
 export default class PromptController {
@@ -99,13 +99,13 @@ export default class PromptController {
     }
 
     try {
-      // Tải ảnh và chuyển sang base64
+      // dowload image 
       console.time("Image Processing");
       const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
       const base64Image = Buffer.from(response.data).toString("base64");
       console.timeEnd("Image Processing");
 
-      // Gọi OpenAI API
+      // call OpenAI API
       const completion = await openai.chat.completions.create({
         model: "gpt-4-vision-preview",
         messages: [
@@ -128,7 +128,7 @@ export default class PromptController {
         max_tokens: 256,
       });
 
-      // Xử lý response
+      // handle
       const result = completion.choices[0].message.content;
       const parsedResult = parseJsonString(result);
 
