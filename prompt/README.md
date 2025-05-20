@@ -75,3 +75,72 @@ const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
         .json({ error: "Claude API error", detail: error.message });
     }
 ```
+
+
+WITH OPEN AI
+
+
+
+```
+import { Request, Response } from "express";
+import OpenAI from "openai";
+import { appPrompt, parseJsonString } from "../utils/prompt";
+const axios = require("axios");
+
+const openai = new OpenAI({
+  apiKey: "sk-your-api-key-here", // Thay bằng API key thực tế
+});
+
+export default class PromptController {
+  async create(req: Request, res: Response) {
+    const { imageUrl } = req.body;
+    if (!imageUrl) {
+      return res.status(400).json({ error: "Missing imageUrl" });
+    }
+
+    try {
+      // Tải ảnh và chuyển sang base64
+      console.time("Image Processing");
+      const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+      const base64Image = Buffer.from(response.data).toString("base64");
+      console.timeEnd("Image Processing");
+
+      // Gọi OpenAI API
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4-vision-preview",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: appPrompt(),
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${base64Image}`,
+                },
+              },
+            ],
+          },
+        ],
+        max_tokens: 256,
+      });
+
+      // Xử lý response
+      const result = completion.choices[0].message.content;
+      const parsedResult = parseJsonString(result);
+
+      res.json({ completion: parsedResult });
+    } catch (error: any) {
+      res.status(500).json({ 
+        error: "OpenAI API Error",
+        detail: error.message 
+      });
+    }
+  }
+}
+
+
+```
