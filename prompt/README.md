@@ -1,0 +1,1 @@
+- detect product, category follow a list defined by clients using bedrock
